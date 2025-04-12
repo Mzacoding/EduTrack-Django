@@ -29,7 +29,7 @@ class Student(models.Model):
     FirstName = models.CharField(max_length=25)
     LastName = models.CharField(max_length=25)
     Email = models.EmailField(unique=True)
-    contactNumber= models.CharField(max_length=10)
+    contactNumber= models.CharField(max_length=20)
 
 
     def __str__(self):
