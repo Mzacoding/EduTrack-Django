@@ -29,6 +29,8 @@ class Student(models.Model):
     FirstName = models.CharField(max_length=25)
     LastName = models.CharField(max_length=25)
     Email = models.EmailField(unique=True)
+    contactNumber= models.CharField(max_length=10)
+
 
     def __str__(self):
         return f"{self.FirstName} {self.LastName}"
@@ -112,7 +114,7 @@ class Admin(models.Model):
     FirstName = models.CharField(max_length=25)
     LastName = models.CharField(max_length=25)
     Email = models.EmailField(unique=True)
-
+    
     def __str__(self):
         return f"{self.FirstName} {self.LastName}"
 

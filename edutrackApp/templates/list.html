@@ -1,0 +1,40 @@
+
+{% extends "base.html" %}
+
+{% block title %} Students List {%endblock%}
+
+
+{% block content %}  
+
+<div class="d-flex justify-content-between mb-3">
+
+    <h3>Student List</h3>
+
+    <a class="btn btn-primary" href="{% url 'add' %}">Add Student</a>
+</div>
+
+
+
+<table class="table table-border">
+
+   <thead class="table-dark">
+
+    <tr>
+        <th>#</th>
+        <th>Student  Number</th>
+        <th>Student  FirstName</th>
+        <th>Student   LastName</th>
+        <th>Student  Email</th>
+        <th>Student  ContactNumber</th>
+    </tr>
+   </thead>
+
+   <tbody>
+
+    <tr>
+        <td></td>
+    </tr>
+   </tbody>
+</table>
+
+{%endblock%}
