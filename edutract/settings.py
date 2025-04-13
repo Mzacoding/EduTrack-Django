@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'edutrackApp',
     'django_extensions',
-    'crispy-forms',
-    'crispy-bootstrap5'
+    'crispy_forms',
+    'crispy_bootstrap5'
  
 
 ]

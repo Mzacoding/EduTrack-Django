@@ -23,21 +23,24 @@ def students_list_view(request):
 
 
 def update_student_view(request,pk):
-    student=Student.objects.get(id=pk)
+    student=Student.objects.get(StudentNumber= pk)
     if request.method=='POST':
        form=StudentForm(request.POST,instance=student)
 
        if form.is_valid():
           form.save()
+          return redirect('list')
 
     else :      
       form=StudentForm(instance=student)
-      return render(request, 'update.html',{'form':form})
+    return render(request, 'update.html',{'form':form})
+
+ 
+
 
 
 def delete_student_view(request, pk):
-    student=Student.objects.get(id= pk)
+    student=Student.objects.get(StudentNumber=pk)
     if request.method=='POST':
         student.delete()
-
-    return redirect('list')
+        return redirect('list')
