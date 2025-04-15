@@ -110,7 +110,7 @@ def add_subject(request):
     return render(request, 'add_subject.html', {'form': form})
 
 
-def subject_list(request):
+def subject_list_view(request):
     subjects = Subject.objects.select_related('DepartmentCode').all()
     return render(request, 'subject_list.html', {'subjects': subjects})
 

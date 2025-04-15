@@ -1,14 +1,14 @@
 
 {% extends "base.html" %}
 
-{% block title %} Students List {%endblock%}
+{% block title %} Subject List {%endblock%}
 
 
 {% block content %}  
 
 <div class="d-flex justify-content-between mb-3">
 
-    <h3>Students</h3>
+    <h3>Subject</h3>
 
     <a class="btn btn-primary" href="{% url 'add' %}">Add Subject</a>
 </div>
@@ -23,7 +23,7 @@
         <th>#</th>
         <th>Subject  SubjectName</th>
         <th>Subject  SubjectCode</th>
-        <th>Subject   Department</th>
+        <th>Subject   Department Name</th>
       
         
     </tr>

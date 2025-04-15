@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'edutract.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'TUT',
+        'NAME': 'walker',
         'USER': 'nyiko',
         'PASSWORD': 'nyiko12',
         'HOST': 'localhost',
