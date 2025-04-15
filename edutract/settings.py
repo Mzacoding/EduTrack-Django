@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+
 from pathlib import Path,os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -82,11 +83,11 @@ WSGI_APPLICATION = 'edutract.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'walker',
-        'USER': 'nyiko',
-        'PASSWORD': 'nyiko12',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'zbHjaiOdVNoweLODhscmbXkYmcIiNmZS',
+        'HOST': 'mainline.proxy.rlwy.net',
+        'PORT': '19540',
     }
 }
 
