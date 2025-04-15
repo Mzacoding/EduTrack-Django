@@ -31,7 +31,6 @@ class Student(models.Model):
     Email = models.EmailField(unique=True)
      
 
-
     def __str__(self):
         return f"{self.FirstName} {self.LastName}"
   

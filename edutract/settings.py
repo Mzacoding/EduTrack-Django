@@ -23,9 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-u+regd&0uvkhck$sr23l5s#9_mw7viwrya95u*jto4thm$d(r!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ 
+ALLOWED_HOSTS = ['vercel.app', '127.0.0.1', '.now.sh']
 
 
 
@@ -42,8 +43,6 @@ INSTALLED_APPS = [
     'django_extensions',
     'crispy_forms',
     'crispy_bootstrap5'
- 
-
 ]
 
 MIDDLEWARE = [
