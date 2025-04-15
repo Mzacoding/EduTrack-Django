@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-
 from pathlib import Path,os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,10 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-u+regd&0uvkhck$sr23l5s#9_mw7viwrya95u*jto4thm$d(r!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
- 
-ALLOWED_HOSTS = ['vercel.app', '127.0.0.1', '.now.sh']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 
@@ -44,6 +42,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'crispy_forms',
     'crispy_bootstrap5'
+ 
+
 ]
 
 MIDDLEWARE = [
@@ -83,11 +83,11 @@ WSGI_APPLICATION = 'edutract.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'zbHjaiOdVNoweLODhscmbXkYmcIiNmZS',
-        'HOST': 'mainline.proxy.rlwy.net',
-        'PORT': '19540',
+        'NAME': 'TUT',
+        'USER': 'nyiko',
+        'PASSWORD': 'nyiko12',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -127,14 +127,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
- 
-STATIC_URL = '/static/'
-STATIC_ROOT = 'staticfiles'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = 'mediafiles'
-
-#STATIC_ROOT=os.path.join(BASE_DIR,'statcfiles_build')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
