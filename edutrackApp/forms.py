@@ -11,3 +11,15 @@ class LecturerForm(forms.ModelForm):
         model=Lecturer
         fields='__all__'
 
+
+class DepartmentForm(forms.ModelForm):
+    class Meta:
+        model = Department
+        fields='__all__'
+
+class SubjectForm(forms.ModelForm):
+    class Meta:
+        model = Subject
+        fields='__all__'
+       
+

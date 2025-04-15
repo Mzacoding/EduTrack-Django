@@ -16,4 +16,7 @@ urlpatterns = [
     path('lecture_view/list/', views.lecture_list_view, name='lecture_view/list'),
     path('lecture_view/update/<str:pk>/', views.update_lecture_view, name='lecture_view/update'),
     path('lecture_view/delete/<str:pk>/', views.delete_lecture_view, name='lecture_view/delete'),
+    path('subject_list_view/', views.subject_list_view),
+
+    
 ]

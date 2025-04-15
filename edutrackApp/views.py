@@ -85,4 +85,34 @@ def delete_lecture_view(request, pk):
     lecture=Lecturer.objects.get(StaffNumber=pk)
     if request.method=='POST':
         lecture.delete()
-        return redirect('lecture_view/list')    
+        return redirect('lecture_view/list')   
+
+
+
+def add_department(request):
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('department_list')
+    else:
+        form = DepartmentForm()
+    return render(request, 'add_department.html', {'form': form})
+
+def add_subject(request):
+    if request.method == 'POST':
+        form = SubjectForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('subject_list')
+    else:
+        form = SubjectForm()
+    return render(request, 'add_subject.html', {'form': form})
+
+
+def subject_list(request):
+    subjects = Subject.objects.select_related('DepartmentCode').all()
+    return render(request, 'subject_list.html', {'subjects': subjects})
+
+
+

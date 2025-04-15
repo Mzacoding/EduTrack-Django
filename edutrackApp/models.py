@@ -126,3 +126,7 @@ class UserLogs(models.Model):
 
     def __str__(self):
         return f"{self.AdminName} - {self.LogDescription}"
+
+
+
+ 
