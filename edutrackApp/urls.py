@@ -18,5 +18,16 @@ urlpatterns = [
     path('lecture_view/delete/<str:pk>/', views.delete_lecture_view, name='lecture_view/delete'),
     path('subject_list_view/', views.subject_list_view),
 
-    
+    path('add_department/', views.add_department, name='add_department'),
+    path('add_subject/', views.add_subject, name='add_subject'),
+    path('department_list_view/', views.department_list_view, name='department_list'),
+    path('subject_list_view/', views.subject_list_view, name='subject_list_view'),
+
+    path('department_list_view/update/<str:pk>/', views.department_list_view, name='department_update'),
+
+    path('subject_list_view/update/<str:pk>/', views.update_subject_view, name='update_subject'),
+    path('subject_list_view/delete/<str:pk>/', views.delete_subject_view, name='delete_subject'),
+
+   
+   
 ]

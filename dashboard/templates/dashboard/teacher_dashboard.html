@@ -1,0 +1,499 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Custom Top Navigation Styling (Fixed) */
+    .navbar-custom {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background-image: linear-gradient(to right, #4a90e2, #3670ca);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+    }
+    .navbar-custom .navbar-brand,
+    .navbar-custom .navbar-text,
+    .navbar-custom .nav-link,
+    .navbar-custom span {
+      color: #fff !important;
+    }
+    .navbar-custom .btn {
+      border-color: #fff;
+      color: #fff;
+    }
+    .navbar-custom .btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+    .navbar-custom .rounded-circle {
+      border: 2px solid #fff;
+    }
+  
+    /* Fixed Sidebar Styling */
+    aside {
+      position: fixed;
+      top: 60px; /* below the fixed top navbar */
+      left: 0;
+      bottom: 0;
+      width: 200px;
+      background-color: #343a40;
+      padding-top: 20px;
+      color: #fff;
+    }
+    aside .nav-link {
+      color: #adb5bd;
+      font-weight: 500;
+      padding: 10px 15px;
+      margin: 5px 10px;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+    }
+    aside .nav-link:hover,
+    aside .nav-link.active {
+      background-color: #495057;
+      color: #fff;
+      border-radius: 5px;
+    }
+  
+    main {
+         
+        margin-left: 300px;    /* Sidebar width */
+        padding-top: 100px;     /* Enough space for the fixed navbar */
+        background-color: #f8f9fa;
+        min-height: 150vh;
+       
+      }
+      
+    /* KPI Cards */
+    .kpi-card {
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 0.25rem;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .kpi-card h5 {
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+  
+    /* Content Sections (hidden by default) */
+    .content-section { 
+      display: none; 
+    }
+    .content-section.active { 
+      display: block; 
+    }
+  
+    /* Styles for Student List Section */
+    #studentListSection input {
+      margin-bottom: 10px;
+    }
+    #studentPagination {
+      margin-top: 10px;
+    }
+  </style>
+  
+</head>
+
+{% load static %}
+<body>
+  <!-- Header -->
+  <nav class="navbar navbar-custom">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <img src="{% static teacher.profile_pic %}" width="40" height="40" class="rounded-circle" alt="Teacher">
+
+        <span class="ms-2 navbar-brand">{{ teacher.name }} ({{ teacher.class }})</span>
+      </div>
+      <div>
+        <button class="btn btn-outline-light me-2">Logout</button>
+        <button class="btn btn-outline-light">
+          Notifications (<span id="notification-count">3</span>)
+        </button>
+      </div>
+    </div>
+  </nav>
+  
+  
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <aside class="col-md-2">
+        <ul class="nav flex-column mt-3">
+          <li class="nav-item">
+            <a class="nav-link active" data-section="section-dashboard">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-section="section-attendance">Attendance Management</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-section="section-grade">Grade Submission</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-section="section-addmarks">Add Marks</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-section="section-studentlist">All Students</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-section="section-profile">Settings/Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-section="section-notifications">Notifications</a>
+          </li>
+        </ul>
+      </aside>
+      
+      <!-- Main Content -->
+      <main class="col-md-10">
+        <!-- Dashboard Section -->
+        <div id="section-dashboard" class="content-section active">
+          <h4>Student Performance Insights</h4>
+          <div class="row">
+            <!-- KPI Cards -->
+            <div class="col-md-4">
+              <div class="kpi-card">
+                <h5>Average Grade</h5>
+                <p>{{ average_grade }}%</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="kpi-card">
+                <h5>Pass Rate</h5>
+                <p>{{ pass_rate }}%</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <!-- Grade Distribution Doughnut Chart -->
+              <canvas id="gradeDistributionChart"></canvas>
+            </div>
+          </div>
+          <h4>Student Performance Trends</h4>
+          <canvas id="trendsChart" width="400" height="200"></canvas>
+        </div>
+        
+        <!-- Attendance Management Section -->
+        <div id="section-attendance" class="content-section">
+          <h4>Class Attendance Tracker</h4>
+          <div class="mb-3">
+            <a href="?download=csv&type=attendance" class="btn btn-primary">Download Attendance Data (CSV)</a>
+          </div>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in attendance_data %}
+              <tr>
+                <td>{{ record.student }}</td>
+                <td>{{ record.status }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Grade Submission Section -->
+        <div id="section-grade" class="content-section">
+          <h4>Grade Management</h4>
+          <div class="mb-3">
+            <a href="?download=csv&type=grades" class="btn btn-primary">Download Grade Data (CSV)</a>
+          </div>
+          <table class="table table-striped" id="gradeTable">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for data in grade_data %}
+              <tr>
+                <td>{{ data.student }}</td>
+                <td>{{ data.grade }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <canvas id="analyticsChart" width="400" height="200"></canvas>
+        </div>
+        
+        <!-- Add Marks Section -->
+        <div id="section-addmarks" class="content-section">
+          <h4>Add Student Marks</h4>
+          <form id="addMarksForm">
+            <div class="mb-3">
+              <label for="subjectSelect" class="form-label">Select Subject</label>
+              <select id="subjectSelect" class="form-select">
+                <option value="Mobile Computing">Mobile Computing</option>
+                <option value="Internet Programming">Internet Programming</option>
+                <option value="Database Programming">Database Programming</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="studentName" class="form-label">Student Name</label>
+              <input type="text" id="studentName" class="form-control" placeholder="Enter student name" required>
+            </div>
+            <div class="mb-3">
+              <label for="studentMark" class="form-label">Mark</label>
+              <input type="number" id="studentMark" class="form-control" placeholder="Enter mark" required>
+            </div>
+            <button type="submit" class="btn btn-success">Add Mark</button>
+          </form>
+          <h5 class="mt-4">Added Marks</h5>
+          <table class="table table-striped" id="marksTable">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Student Name</th>
+                <th>Mark</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rows will be appended here -->
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- All Students Section -->
+        <div id="section-studentlist" class="content-section">
+          <h4>All Students</h4>
+          <!-- Search and Download Options -->
+          <div class="mb-3">
+            <input type="text" id="studentSearch" class="form-control" placeholder="Search for a student...">
+          </div>
+          <div class="mb-3">
+            <a href="?download=csv&type=student" class="btn btn-success">Download Student Data (CSV)</a>
+          </div>
+          <!-- Table for the student list -->
+          <table class="table table-bordered" id="studentTable">
+            <thead>
+              <tr>
+                <th>Student Number</th>
+                <th>Name</th>
+                <th>Marks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- JavaScript will render rows here -->
+            </tbody>
+          </table>
+          <!-- Pagination Controls -->
+          <nav id="studentPagination">
+            <ul class="pagination">
+              <li class="page-item" id="prevPage"><a class="page-link" href="#">Previous</a></li>
+              <li class="page-item" id="nextPage"><a class="page-link" href="#">Next</a></li>
+            </ul>
+          </nav>
+        </div>
+        
+        <!-- Profile Section -->
+        <div id="section-profile" class="content-section">
+          <h4>Profile Information</h4>
+          <div class="card" style="width: 18rem;">
+            <img src="{% static teacher.profile_pic %}" class="card-img-top" alt="Teacher Profile">
+            <div class="card-body">
+              <h5 class="card-title">{{ teacher.name }}</h5>
+              <p class="card-text">Class: {{ teacher.class }}</p>
+              <!-- Add more profile details as needed -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Notifications Section -->
+        <div id="section-notifications" class="content-section">
+          <h4>Notifications</h4>
+          <p>No new notifications.</p>
+        </div>
+      </main>
+    </div>
+  </div>
+  
+  {# Output performance_trends as JSON #}
+  {{ performance_trends|json_script:"performance-trends-data" }}
+  
+  {# Output student_list as JSON for client-side pagination #}
+  {{ student_list|json_script:"student-list-data" }}
+  
+  <!-- JavaScript Section -->
+  <script>
+    // Sidebar Navigation: Show/hide content sections.
+    document.querySelectorAll('aside .nav-link').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('aside .nav-link').forEach(function(el) {
+          el.classList.remove('active');
+        });
+        document.querySelectorAll('.content-section').forEach(function(section) {
+          section.classList.remove('active');
+          section.style.display = 'none';
+        });
+        this.classList.add('active');
+        var target = this.getAttribute('data-section');
+        var targetSection = document.getElementById(target);
+        if (targetSection) {
+          targetSection.classList.add('active');
+          targetSection.style.display = 'block';
+        }
+      });
+    });
+    
+    // Initialize Grade Distribution Doughnut Chart
+    var gradeDistributionCtx = document.getElementById('gradeDistributionChart').getContext('2d');
+    var gradeDistData = JSON.parse('{{ grade_distribution|escapejs }}');
+    new Chart(gradeDistributionCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['A', 'B', 'C', 'D'],
+        datasets: [{
+          data: gradeDistData,
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+            'rgba(255, 205, 86, 0.5)',
+            'rgba(255, 99, 132, 0.5)'
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 205, 86, 1)',
+            'rgba(255, 99, 132, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'top' } } }
+    });
+    
+    // Initialize Student Performance Trends Chart (Line Chart)
+    var trendsCtx = document.getElementById('trendsChart').getContext('2d');
+    var trendsData = JSON.parse(document.getElementById('performance-trends-data').textContent);
+    new Chart(trendsCtx, {
+      type: 'line',
+      data: {
+        labels: trendsData.labels,
+        datasets: [{
+          label: 'Average Grade Trend',
+          data: trendsData.data,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          fill: false,
+          tension: 0.3
+        }]
+      },
+      options: { scales: { y: { beginAtZero: true } } }
+    });
+    
+    // Initialize Semester Analytics Chart in Grade Submission Section (Bar Chart)
+    var analyticsCtx = document.getElementById('analyticsChart').getContext('2d');
+    var semesterData = JSON.parse('{{ analytics.chart_data|escapejs }}');
+    new Chart(analyticsCtx, {
+      type: 'bar',
+      data: {
+        labels: ["FA1", "FA2","Exam"],
+        datasets: [{
+          label: 'Average Grades',
+          data: semesterData,
+          backgroundColor: ['rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)'],
+          borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'],
+          borderWidth: 1
+        }]
+      },
+      options: { scales: { y: { beginAtZero: true } } }
+    });
+    
+    // "Add Marks" Section: Handle form submission.
+    document.getElementById('addMarksForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var subject = document.getElementById('subjectSelect').value;
+      var studentName = document.getElementById('studentName').value.trim();
+      var studentMark = document.getElementById('studentMark').value.trim();
+      if (!studentName || !studentMark) return;
+      var tableBody = document.querySelector('#marksTable tbody');
+      var newRow = document.createElement('tr');
+      newRow.innerHTML = "<td>" + subject + "</td><td>" + studentName + "</td><td>" + studentMark + "</td>";
+      tableBody.appendChild(newRow);
+      document.getElementById('studentName').value = "";
+      document.getElementById('studentMark').value = "";
+    });
+    
+    /***********************
+     *  Student List Section (Client-side Pagination & Search)
+     ***********************/
+    var studentData = JSON.parse(document.getElementById('student-list-data').textContent);
+    var currentStudentPage = 1;
+    var studentsPerPage = 5;
+    var filteredStudents = studentData; // start with all students
+
+    function renderStudentTable() {
+      var tableBody = document.querySelector('#studentTable tbody');
+      tableBody.innerHTML = ""; // clear previous rows
+      var startIndex = (currentStudentPage - 1) * studentsPerPage;
+      var endIndex = startIndex + studentsPerPage;
+      var pageStudents = filteredStudents.slice(startIndex, endIndex);
+      pageStudents.forEach(function(student) {
+        var row = document.createElement('tr');
+        row.innerHTML = "<td>" + student.id + "</td><td>" + student.name + "</td><td>" + student.subject + "</td>";
+        tableBody.appendChild(row);
+      });
+      renderStudentPagination();
+    }
+
+    function renderStudentPagination() {
+      var pagination = document.getElementById('studentPagination');
+      // We'll just enable/disable the "Previous" and "Next" buttons.
+      document.getElementById('prevPage').classList.toggle('disabled', currentStudentPage === 1);
+      var totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
+      document.getElementById('nextPage').classList.toggle('disabled', currentStudentPage === totalPages);
+    }
+
+    // Search filtering
+    document.getElementById('studentSearch').addEventListener('keyup', function() {
+      var query = this.value.toLowerCase();
+      filteredStudents = studentData.filter(function(student) {
+        return student.name.toLowerCase().includes(query);
+      });
+      currentStudentPage = 1;
+      renderStudentTable();
+    });
+
+    // Pagination button event listeners
+    document.getElementById('prevPage').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (currentStudentPage > 1) {
+        currentStudentPage--;
+        renderStudentTable();
+      }
+    });
+    document.getElementById('nextPage').addEventListener('click', function(e) {
+      e.preventDefault();
+      var totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
+      if (currentStudentPage < totalPages) {
+        currentStudentPage++;
+        renderStudentTable();
+      }
+    });
+
+    // Initial rendering of student list table
+    renderStudentTable();
+    
+  </script>
+</body>
+</html>

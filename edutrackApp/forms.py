@@ -21,5 +21,8 @@ class SubjectForm(forms.ModelForm):
     class Meta:
         model = Subject
         fields='__all__'
+        widgets = {
+            'DepartmentCode': forms.Select(attrs={'class': 'form-control'})
+                }
        
 

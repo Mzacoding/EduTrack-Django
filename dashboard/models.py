@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.db import models
+
 class Department(models.Model):
      D_Code = models.CharField(max_length=6, primary_key=True)
      DepartmentName = models.CharField(max_length=100)

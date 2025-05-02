@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <img src="{{ admin.profile_pic }}" width="40" height="40" class="rounded-circle" alt="Admin">
+                <span class="ms-2">{{ admin.name }}</span>
+            </div>
+            <div>
+                <button class="btn btn-outline-secondary me-2">Logout</button>
+                <button class="btn btn-outline-primary">
+                    System Alerts (<span id="alert-count">5</span>)
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <aside class="col-md-2 bg-light">
+                <ul class="nav flex-column mt-3">
+                    <li class="nav-item"><a href="#" class="nav-link active">Dashboard</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">User Management</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">Attendance Reports</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">Grade Analytics</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">Settings/System Configurations</a></li>
+                </ul>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="col-md-10 mt-3">
+                <!-- User Management -->
+                <section class="mb-5">
+                    <h4>User Management</h4>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in user_management %}
+                            <tr>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.role }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Attendance Reports -->
+                <section class="mb-5">
+                    <h4>Attendance Reports</h4>
+                    <canvas id="attendanceChart" width="400" height="200"></canvas>
+                </section>
+
+                <!-- Academic Performance Overview -->
+                <section class="mb-5">
+                    <h4>Academic Performance Overview</h4>
+                    <p>Average Grade: {{ report_data.average_grade }}</p>
+                    <p>Attendance Percentage: {{ report_data.attendance_percentage }}%</p>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Render the attendance chart using Chart.js
+        var ctx = document.getElementById('attendanceChart').getContext('2d');
+        var attendanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+                datasets: [{
+                    label: 'Attendance Trend',
+                    data: [95, 90, 93, 96, 92],  // Sample data
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

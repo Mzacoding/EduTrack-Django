@@ -26,8 +26,8 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link text-white" href="{% url 'list' %}">Students</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="{% url 'lecture_view/list' %} ">Lecturers</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="/subjects/">Subjects</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="/departments/">Departments</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'subject_list_view'%}">Subjects</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'department_list' %}">Departments</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/semesters/">Semesters</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/attendance/">Attendance</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/assessments/">Assessments</a></li>
