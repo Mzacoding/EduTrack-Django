@@ -1,151 +1,152 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  {% load json_script %}
-  <title>Student Dashboard</title>
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <!-- Chart.js Library -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-  <!-- DEBUG BLOCK: Outputs context for verification -->
-  <div style="background-color: #FFC; padding: 10px; text-align: center;">
-    <strong>DEBUG:</strong>
-    <div>User: {{ user }}</div>
-    <div>Notifications: {{ notifications }}</div>
-    <div>Grades:
-      {% for grade in grades %}
-        {{ grade.course }}-{{ grade.grade }}&nbsp;
-      {% endfor %}
-    </div>
-    <div>Performance Data: {{ performance_data }}</div>
-  </div>
-
-  <!-- Header -->
-  <nav class="navbar navbar-light bg-light">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center">
-        <img src="{{ user.profile_pic }}" width="40" height="40" class="rounded-circle" alt="Profile">
-        <span class="ms-2">{{ user.name }}</span>
-      </div>
-      <div>
-        <button class="btn btn-outline-secondary me-2">Logout</button>
-        <button class="btn btn-outline-primary">
-          Notifications (<span id="notification-count">{{ notifications|length }}</span>)
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Sidebar -->
-      <aside class="col-md-2 bg-light">
-        <ul class="nav flex-column mt-3">
-          <li class="nav-item"><a href="#" class="nav-link active">Dashboard</a></li>
-          <li class="nav-item"><a href="#" class="nav-link">Attendance</a></li>
-          <li class="nav-item"><a href="#" class="nav-link">Grades</a></li>
-          <li class="nav-item"><a href="#" class="nav-link">Notifications</a></li>
-          <li class="nav-item"><a href="#" class="nav-link">Settings/Profile</a></li>
-        </ul>
-      </aside>
-
-      <!-- Main Content -->
-      <main class="col-md-10 mt-3">
-        <!-- Attendance Trigger Button -->
-        <section class="mb-5">
-          <button class="btn btn-success btn-lg" onclick="startFacialRecognition()">
-            Mark My Attendance
-          </button>
-        </section>
-
-        <!-- Academic Progress -->
-        <section class="mb-5">
-          <h4>Academic Progress</h4>
-          <!-- Latest Grades Table -->
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Course</th>
-                <th>Grade</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for grade in grades %}
-              <tr>
-                <td>{{ grade.course }}</td>
-                <td>{{ grade.grade }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          <!-- Performance Graph -->
-          <canvas id="performanceChart" width="400" height="200"></canvas>
-        </section>
-
-        <!-- Notifications -->
-        <section class="mb-5">
-          <h4>Notifications</h4>
-          <ul class="list-group">
-            {% for note in notifications %}
-            <li class="list-group-item">{{ note }}</li>
-            {% endfor %}
-          </ul>
-        </section>
-      </main>
-    </div>
-  </div>
-
-  {# Output performance_data as JSON safely using json_script #}
-  {{ performance_data|json_script:"performance-data" }}
-
-  <script>
-    // Dummy function to simulate facial recognition process.
-    function startFacialRecognition() {
-      alert("Facial recognition process started...");
-      // Insert your actual facial recognition code here.
-    }
-
-    // When the window loads, initialize the Chart.js chart.
-    window.addEventListener('load', function(){
-      try {
-        var jsonElem = document.getElementById('performance-data');
-        if (!jsonElem) {
-          console.error("Error: 'performance-data' element not found!");
-          return;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .sidebar {
+            background-color: #343a40;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            padding-top: 15px;
+            overflow-y: auto;
+            margin-top: 60px;
         }
-        var chartData = JSON.parse(jsonElem.textContent);
-        console.log("Chart Data:", chartData);
-        
-        var ctx = document.getElementById('performanceChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
-            datasets: [{
-              label: 'Performance Trend',
-              data: chartData,
-              backgroundColor: 'rgba(54, 162, 235, 0.5)',
-              borderColor: 'rgba(54, 162, 235, 1)',
-              borderWidth: 1,
-              tension: 0.3
-            }]
-          },
-          options: {
-            scales: {
-              y: { beginAtZero: true }
-            }
-          }
-        });
-      } catch (err) {
-        console.error("Chart initialization error:", err);
-      }
-    });
-  </script>
+        .sidebar .nav-link {
+            color: #ffffff;
+            padding: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: #007bff;
+            border-radius: 5px;
+        }
+
+        .navbar-custom {
+            background-color: #007bff;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-custom .container-fluid span {
+            color: #ffffff;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            margin-top: 80px;
+            padding: 20px;
+        }
+
+        .dashboard-section {
+            display: none;
+        }
+        #dashboard { display: block; }
+
+        .profile {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+{% load static %}
+<body>
+
+    <!-- Fixed Top Navbar -->
+    <nav class="navbar navbar-light navbar-custom">
+        <div class="container-fluid d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+                <img src="{% static user.profile_pic %}" width="40" height="40" class="rounded-circle" alt="Profile">
+                <div class="profile">
+                    <span class="ms-2 fw-bold">{{ user.student_number }}</span>
+                    <span class="ms-2 fw-bold">{{ user.Role }}</span>
+                </div>
+            </div>
+            <button class="btn btn-outline-light">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Fixed Sidebar -->
+    <aside class="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link active" onclick="showSection('dashboard')">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('performance')">Performance</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('exam-eligibility')">Exam Qualification</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('study-tips')">Study Tips</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('attendance')">Take Attendance</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="downloadAcademicRecord()">Download Records</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <section id="dashboard" class="dashboard-section">
+            <h4>Welcome to Your Student Dashboard</h4>
+        </section>
+
+        <!-- Performance Tracking -->
+        <section id="performance" class="dashboard-section">
+            <h4>Select Subject to View Performance</h4>
+            <select id="subjectSelect" class="form-select">
+                {% for subject in subjects_registered %}
+                    <option value="{{ subject.name }}">{{ subject.name }}</option>
+                {% endfor %}
+            </select>
+            <p id="performanceSummary"></p>
+            <canvas id="performanceChart"></canvas>
+        </section>
+
+        <!-- Attendance -->
+        <section id="attendance" class="dashboard-section">
+            <h4>Take Attendance</h4>
+            {% if current_class %}
+                <p>Current class in session: <strong>{{ current_class }}</strong></p>
+                <button class="btn btn-success btn-lg" onclick="capturePhoto()">Take Attendance</button>
+                <canvas id="cameraFeed" width="300" height="200"></canvas>
+            {% else %}
+                <p class="text-danger">No class is currently running. Attendance is disabled.</p>
+            {% endif %}
+        </section>
+
+        <!-- Study Tips -->
+        <section id="study-tips" class="dashboard-section">
+            <h4>Study Tips</h4>
+            <ul class="list-group">
+                {% for tip in study_tips %}
+                    <li class="list-group-item">{{ tip }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll(".dashboard-section").forEach(section => {
+                section.style.display = "none";
+            });
+            document.getElementById(sectionId).style.display = "block";
+            document.querySelectorAll(".sidebar .nav-link").forEach(link => {
+                link.classList.remove("active");
+            });
+            document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add("active");
+        }
+
+        function capturePhoto() {
+            alert("Capturing photo for attendance...");
+            // Placeholder function for future face recognition integration
+        }
+    </script>
+
 </body>
 </html>

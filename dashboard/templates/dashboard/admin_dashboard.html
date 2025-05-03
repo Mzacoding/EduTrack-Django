@@ -4,101 +4,191 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrator Dashboard</title>
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <!-- Chart.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Fixed Sidebar */
+        .sidebar {
+            background-color: #343a40;
+            width: 250px;
+            position: fixed;
+            top: 0px;
+            left: 0;
+            bottom: 0;
+            padding-top: 15px;
+            overflow-y: auto;
+            margin-top:60px;
+        }
+        .sidebar .nav-link {
+            color: #ffffff;
+            padding: 10px;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: #007bff;
+            border-radius: 5px;
+        }
+
+        /* Fixed Top Navbar */
+        .navbar-custom {
+            background-color: #007bff;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .navbar-custom .container-fluid span {
+            color: #ffffff;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            margin-top: 80px;
+            padding: 20px;
+        }
+
+        /* Hide Sections Initially */
+        .dashboard-section {
+            display: none;
+        }
+        #dashboard { display: block; }
+
+
+        .profile{
+          display: flex;
+          flex-direction: column;
+        }
+    </style>
 </head>
+
+{% load static %}
 <body>
-    <!-- Header -->
-    <nav class="navbar navbar-light bg-light">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-light navbar-custom">
+        <div class="container-fluid d-flex justify-content-between">
             <div class="d-flex align-items-center">
-                <img src="{{ admin.profile_pic }}" width="40" height="40" class="rounded-circle" alt="Admin">
-                <span class="ms-2">{{ admin.name }}</span>
+                <img src="{% static  admin.profile_pic %}" width="40" height="40" class="rounded-circle" alt="Admin">
+                 <div class="profile">
+                    <span class="ms-2 fw-bold">{{ admin.name }}</span> 
+                    <span class="ms-2 fw-bold">{{ admin.Role }}</span>
+                 </div>
             </div>
             <div>
                 <button class="btn btn-outline-secondary me-2">Logout</button>
-                <button class="btn btn-outline-primary">
-                    System Alerts (<span id="alert-count">5</span>)
-                </button>
             </div>
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <aside class="col-md-2 bg-light">
-                <ul class="nav flex-column mt-3">
-                    <li class="nav-item"><a href="#" class="nav-link active">Dashboard</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link">User Management</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link">Attendance Reports</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link">Grade Analytics</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link">Settings/System Configurations</a></li>
-                </ul>
-            </aside>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link active" onclick="showSection('dashboard')">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('user-management')">User Management</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('roles-permissions')">Roles & Permissions</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('system-logs')">System Logs</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('system-settings')">System Configuration</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('issue-tracking')">Issue Tracking</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('announcements')">Announcements & Messaging</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('profile-management')">Profile Management</a></li>
+        </ul>
+    </aside>
 
-            <!-- Main Content -->
-            <main class="col-md-10 mt-3">
-                <!-- User Management -->
-                <section class="mb-5">
-                    <h4>User Management</h4>
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Role</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for user in user_management %}
-                            <tr>
-                                <td>{{ user.name }}</td>
-                                <td>{{ user.role }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </section>
+    <!-- Main Content -->
+    <div class="main-content">
+        <section id="dashboard" class="dashboard-section">
+            <h4>Admin Dashboard Overview</h4>
+        </section>
 
-                <!-- Attendance Reports -->
-                <section class="mb-5">
-                    <h4>Attendance Reports</h4>
-                    <canvas id="attendanceChart" width="400" height="200"></canvas>
-                </section>
+        <!-- User Management -->
+        <section id="user-management" class="dashboard-section">
+            <h4>User Management</h4>
+            <button class="btn btn-primary" id="add-user">Add User</button>
+            <table class="table table-hover" id="user-table">
+                <thead><tr><th>Name</th><th>Role</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr><td>John Doe</td><td>Student</td><td><button class="btn btn-danger delete-user">Delete</button></td></tr>
+                    <tr><td>Jane Roe</td><td>Student</td><td><button class="btn btn-danger delete-user">Delete</button></td></tr>
+                    <tr><td>Ms. Smith</td><td>Teacher</td><td><button class="btn btn-danger delete-user">Delete</button></td></tr>
+                </tbody>
+            </table>
+        </section>
 
-                <!-- Academic Performance Overview -->
-                <section class="mb-5">
-                    <h4>Academic Performance Overview</h4>
-                    <p>Average Grade: {{ report_data.average_grade }}</p>
-                    <p>Attendance Percentage: {{ report_data.attendance_percentage }}%</p>
-                </section>
-            </main>
-        </div>
+        <!-- Roles & Permissions -->
+        <section id="roles-permissions" class="dashboard-section">
+            <h4>Roles & Permissions</h4>
+            <button class="btn btn-primary" onclick="alert('Assigning Roles')">Assign Roles</button>
+        </section>
+
+        <!-- System Logs -->
+        <section id="system-logs" class="dashboard-section">
+            <h4>System Logs</h4>
+            <button class="btn btn-info" onclick="alert('Viewing Logs')">View Logs</button>
+        </section>
+
+        <!-- System Configuration -->
+        <section id="system-settings" class="dashboard-section">
+            <h4>System Settings</h4>
+            <button class="btn btn-primary" onclick="alert('Updating Settings')">Update Settings</button>
+        </section>
+
+        <!-- Issue Tracking -->
+        <section id="issue-tracking" class="dashboard-section">
+            <h4>Issue Tracking</h4>
+            <table class="table">
+                <thead><tr><th>Ticket ID</th><th>User</th><th>Issue</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr><td>001</td><td>John Doe</td><td>Login failure</td><td>Pending</td><td><button class="btn btn-success resolve-issue">Resolve</button></td></tr>
+                    <tr><td>002</td><td>Jane Roe</td><td>Grade missing</td><td>Pending</td><td><button class="btn btn-success resolve-issue">Resolve</button></td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Announcements & Messaging -->
+        <section id="announcements" class="dashboard-section">
+            <h4>Announcements & Messaging</h4>
+            <button class="btn btn-success" onclick="alert('Sending Message')">Send Announcement</button>
+        </section>
+
+        <!-- Profile Management -->
+        <section id="profile-management" class="dashboard-section">
+            <h4>Profile Management</h4>
+            <button class="btn btn-primary" onclick="alert('Updating Profile')">Update Profile</button>
+        </section>
     </div>
 
     <script>
-        // Render the attendance chart using Chart.js
-        var ctx = document.getElementById('attendanceChart').getContext('2d');
-        var attendanceChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-                datasets: [{
-                    label: 'Attendance Trend',
-                    data: [95, 90, 93, 96, 92],  // Sample data
-                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
+        function showSection(sectionId) {
+            document.querySelectorAll(".dashboard-section").forEach(section => {
+                section.style.display = "none";
+            });
+            document.getElementById(sectionId).style.display = "block";
+
+            document.querySelectorAll(".sidebar .nav-link").forEach(link => {
+                link.classList.remove("active");
+            });
+            document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add("active");
+        }
+
+        // User Management Actions
+        $(document).on("click", ".delete-user", function() {
+            $(this).closest("tr").remove();
+        });
+
+        $("#add-user").click(function() {
+            $("#user-table tbody").append('<tr><td>New User</td><td>Guest</td><td><button class="btn btn-danger delete-user">Delete</button></td></tr>');
+        });
+
+        // Issue Tracking Actions
+        $(document).on("click", ".resolve-issue", function() {
+            $(this).closest("tr").find("td:nth-child(4)").text("Resolved");
+            $(this).remove();
         });
     </script>
+
 </body>
 </html>

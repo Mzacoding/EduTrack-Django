@@ -1,47 +1,130 @@
 import csv
 from django.shortcuts import render, HttpResponse
+from django.shortcuts import render
+from django.utils.safestring import mark_safe
+import json
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from .forms import LoginForm
+from django.shortcuts import render
+from django.utils.safestring import mark_safe
+import json
+
+from django.shortcuts import render
+from django.utils.safestring import mark_safe
+import json
+from django.shortcuts import render
+from django.utils.safestring import mark_safe
+import json
+
+from django.shortcuts import render
+from django.utils.safestring import mark_safe
+import json
+import datetime
+from django.shortcuts import render
+from django.utils.safestring import mark_safe
+import json
+import datetime
+
+
+ 
+
+def home_view(request):
+    return render(request, "Home/home.html")
+
+def get_current_class():
+    """Mock function to retrieve the current class based on time."""
+    timetable = {
+        "08:00-09:30": "Math",
+        "10:00-11:30": "Science",
+        "13:00-22:30": "History",
+    }
+
+    now = datetime.datetime.now().strftime("%H:%M")
+
+    for time_range, subject in timetable.items():
+        start, end = time_range.split("-")
+        if start <= now <= end:
+            return subject
+
+    return None  # No class is currently running
 
 def student_dashboard(request):
+    subjects_registered = [
+        {"name": "Math", "course": "BSc Engineering", "final_marks": 65, "required_marks": 50},
+        {"name": "Science", "course": "BSc Physics", "final_marks": 80, "required_marks": 50},
+        {"name": "History", "course": "BA History", "final_marks": 45, "required_marks": 50},
+    ]
+
+    performance_data = [{"subject": sub["name"], "marks": sub["final_marks"]} for sub in subjects_registered]
+
+    current_class = get_current_class()
+
     context = {
         "user": {
-            "name": "John Doe",
-            "profile_pic": "https://via.placeholder.com/40",  # Placeholder image URL
+            "name": "Nyiko Mkansi",
+            "student_number": "221155230",
+            "profile_pic": "dashboard/styles/nyiko.jpg",
+            "Role": "Student",
         },
-        "notifications": [
-            "Your attendance has been marked.",
-            "A new grade has been posted.",
+        "subjects_registered": subjects_registered,
+        "performance_data": mark_safe(json.dumps(performance_data)),
+        "current_class": current_class,  # Determines if attendance can be taken
+        "study_tips": [
+            "Attend all lectures and take good notes.",
+            "Use past exam papers to practice questions.",
+            "Join study groups for better understanding.",
+            "Increase participation in class discussions.",
         ],
-        "grades": [
-            {"course": "Math", "grade": "A"},
-            {"course": "Science", "grade": "B+"},
-            {"course": "History", "grade": "A-"},
-        ],
-        "performance_data": [65, 70, 75, 80, 85],  # Sample performance values
     }
     return render(request, "dashboard/student_dashboard.html", context)
- 
+
+
+
+
+
 
 def admin_dashboard(request):
     context = {
         "admin": {
-            "name": "Admin User",
-            "profile_pic": "https://via.placeholder.com/40",
+            "name": "Nyiko Mkansi",
+            "Role":'Admin User',
+           "profile_pic": "dashboard/styles/nyiko.jpg",
         },
         "user_management": [
             {"name": "John Doe", "role": "Student"},
             {"name": "Jane Roe", "role": "Student"},
             {"name": "Ms. Smith", "role": "Teacher"},
         ],
-        "report_data": {
-            "attendance_percentage": 92,
-            "average_grade": "B+",
-        },
-        "attendance_reports": [
-            {"date": "2025-05-01", "present": 100, "absent": 5},
-            {"date": "2025-05-02", "present": 98, "absent": 7},
+        "system_logs": [
+            {"date": "2025-05-01", "action": "User John Doe updated profile"},
+            {"date": "2025-05-02", "action": "Admin added new user: Jane Roe"},
+            {"date": "2025-05-03", "action": "Password reset requested for Ms. Smith"},
         ],
+        "roles_permissions": [
+            {"user": "John Doe", "role": "Student", "permissions": ["View Grades", "Submit Assignments"]},
+            {"user": "Jane Roe", "role": "Student", "permissions": ["View Grades", "Submit Assignments"]},
+            {"user": "Ms. Smith", "role": "Teacher", "permissions": ["Manage Classes", "Grade Students"]},
+        ],
+        "system_settings": {
+            "backup_schedule": "Daily at 2 AM",
+            "security_level": "High",
+            "maintenance_mode": False,
+        },
+        "issue_tracking": [
+            {"ticket_id": "001", "user": "John Doe", "issue": "Login failure", "status": "Resolved"},
+            {"ticket_id": "002", "user": "Jane Roe", "issue": "Grade missing", "status": "Pending"},
+            {"ticket_id": "003", "user": "Ms. Smith", "issue": "Access to reports denied", "status": "Investigating"},
+        ],
+        "announcements": [
+            {"title": "Scheduled Maintenance", "message": "System will be down for maintenance on May 10."},
+            {"title": "Policy Update", "message": "New grading policies have been implemented."},
+        ]
     }
     return render(request, "dashboard/admin_dashboard.html", context)
+
 
 
  
@@ -120,3 +203,36 @@ def teacher_dashboard(request):
         },
     }
     return render(request, "dashboard/teacher_dashboard.html", context)
+
+
+
+
+
+def login_view(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            role = form.cleaned_data.get("role")  # Capturing user role
+
+            user = authenticate(request, username=username, password=password)
+
+            if user:
+                login(request, user)
+                
+                # Redirect based on role
+                if role == "student":
+                    return redirect("student_dashboard")
+                elif role == "lecturer":
+                    return redirect("lecturer_dashboard")
+                elif role == "admin":
+                    return redirect("admin_dashboard")
+            else:
+                form.add_error(None, "Invalid username or password.")
+
+    else:
+        form = LoginForm()
+
+    return render(request, "login/login.html", {"form": form})
