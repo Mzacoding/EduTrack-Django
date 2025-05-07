@@ -5,12 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Teacher Dashboard</title>
-  <!-- Bootstrap CSS -->
+  
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <!-- Chart.js Library -->
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* Custom Top Navigation Styling (Fixed) */
+    
     .navbar-custom {
       position: fixed;
       top: 0;
@@ -293,7 +293,7 @@
               </tr>
             </thead>
             <tbody>
-              <!-- JavaScript will render rows here -->
+              
             </tbody>
           </table>
           <!-- Pagination Controls -->
@@ -327,13 +327,13 @@
     </div>
   </div>
   
-  {# Output performance_trends as JSON #}
+   
   {{ performance_trends|json_script:"performance-trends-data" }}
   
-  {# Output student_list as JSON for client-side pagination #}
+ 
   {{ student_list|json_script:"student-list-data" }}
   
-  <!-- JavaScript Section -->
+ 
   <script>
     // Sidebar Navigation: Show/hide content sections.
     document.querySelectorAll('aside .nav-link').forEach(function(link) {
@@ -362,20 +362,23 @@
     new Chart(gradeDistributionCtx, {
       type: 'doughnut',
       data: {
-        labels: ['A', 'B', 'C', 'D'],
+        labels: ['CT1','CT2','FA1', 'FA2', 'Exam'],
         datasets: [{
           data: gradeDistData,
           backgroundColor: [
             'rgba(75, 192, 192, 0.5)',
             'rgba(153, 102, 255, 0.5)',
             'rgba(255, 205, 86, 0.5)',
-            'rgba(255, 99, 132, 0.5)'
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(255, 205, 86, 0.5)',
+             
           ],
           borderColor: [
             'rgba(75, 192, 192, 1)',
             'rgba(153, 102, 255, 1)',
             'rgba(255, 205, 86, 1)',
-            'rgba(255, 99, 132, 1)'
+            'rgba(255, 205, 86, 1)',
+            
           ],
           borderWidth: 1
         }]
@@ -383,7 +386,7 @@
       options: { responsive: true, plugins: { legend: { position: 'top' } } }
     });
     
-    // Initialize Student Performance Trends Chart (Line Chart)
+      
     var trendsCtx = document.getElementById('trendsChart').getContext('2d');
     var trendsData = JSON.parse(document.getElementById('performance-trends-data').textContent);
     new Chart(trendsCtx, {
@@ -401,7 +404,7 @@
       options: { scales: { y: { beginAtZero: true } } }
     });
     
-    // Initialize Semester Analytics Chart in Grade Submission Section (Bar Chart)
+     
     var analyticsCtx = document.getElementById('analyticsChart').getContext('2d');
     var semesterData = JSON.parse('{{ analytics.chart_data|escapejs }}');
     new Chart(analyticsCtx, {
@@ -419,7 +422,7 @@
       options: { scales: { y: { beginAtZero: true } } }
     });
     
-    // "Add Marks" Section: Handle form submission.
+     
     document.getElementById('addMarksForm').addEventListener('submit', function(e){
       e.preventDefault();
       var subject = document.getElementById('subjectSelect').value;
@@ -434,17 +437,15 @@
       document.getElementById('studentMark').value = "";
     });
     
-    /***********************
-     *  Student List Section (Client-side Pagination & Search)
-     ***********************/
+ 
     var studentData = JSON.parse(document.getElementById('student-list-data').textContent);
     var currentStudentPage = 1;
     var studentsPerPage = 5;
-    var filteredStudents = studentData; // start with all students
+    var filteredStudents = studentData;  
 
     function renderStudentTable() {
       var tableBody = document.querySelector('#studentTable tbody');
-      tableBody.innerHTML = ""; // clear previous rows
+      tableBody.innerHTML = "";  
       var startIndex = (currentStudentPage - 1) * studentsPerPage;
       var endIndex = startIndex + studentsPerPage;
       var pageStudents = filteredStudents.slice(startIndex, endIndex);
@@ -458,7 +459,7 @@
 
     function renderStudentPagination() {
       var pagination = document.getElementById('studentPagination');
-      // We'll just enable/disable the "Previous" and "Next" buttons.
+     
       document.getElementById('prevPage').classList.toggle('disabled', currentStudentPage === 1);
       var totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
       document.getElementById('nextPage').classList.toggle('disabled', currentStudentPage === totalPages);

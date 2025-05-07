@@ -3,7 +3,11 @@ from django.shortcuts import render, HttpResponse
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
 import json
-
+from django.shortcuts import render, redirect
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Group
+from .forms import *
+from .models import *
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
@@ -21,12 +25,12 @@ import json
 
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
-import json
+ 
 import datetime
-from django.shortcuts import render
-from django.utils.safestring import mark_safe
-import json
-import datetime
+ 
+ 
+ 
+ 
 
 
  
@@ -39,7 +43,7 @@ def get_current_class():
     timetable = {
         "08:00-09:30": "Math",
         "10:00-11:30": "Science",
-        "13:00-22:30": "History",
+        "13:00-21:30": "History",
     }
 
     now = datetime.datetime.now().strftime("%H:%M")
@@ -49,13 +53,17 @@ def get_current_class():
         if start <= now <= end:
             return subject
 
-    return None  # No class is currently running
+    return None   
+
+import json
+from django.utils.safestring import mark_safe
+from django.shortcuts import render
 
 def student_dashboard(request):
     subjects_registered = [
-        {"name": "Math", "course": "BSc Engineering", "final_marks": 65, "required_marks": 50},
-        {"name": "Science", "course": "BSc Physics", "final_marks": 80, "required_marks": 50},
-        {"name": "History", "course": "BA History", "final_marks": 45, "required_marks": 50},
+        {"name": "Math", "code": "MATH101", "course": "BSc Engineering", "final_marks": 65, "required_marks": 50, "image": "images/math.jpg"},
+        {"name": "Science", "code": "SCI101", "course": "BSc Physics", "final_marks": 80, "required_marks": 50, "image": "images/science.jpg"},
+        {"name": "History", "code": "HIST101", "course": "BA History", "final_marks": 45, "required_marks": 50, "image": "images/history.jpg"},
     ]
 
     performance_data = [{"subject": sub["name"], "marks": sub["final_marks"]} for sub in subjects_registered]
@@ -70,8 +78,8 @@ def student_dashboard(request):
             "Role": "Student",
         },
         "subjects_registered": subjects_registered,
-        "performance_data": mark_safe(json.dumps(performance_data)),
-        "current_class": current_class,  # Determines if attendance can be taken
+        "performance_data": mark_safe(json.dumps(performance_data)),  # Safe JSON data for charts
+        "current_class": current_class,  # Controls attendance section
         "study_tips": [
             "Attend all lectures and take good notes.",
             "Use past exam papers to practice questions.",
@@ -80,6 +88,7 @@ def student_dashboard(request):
         ],
     }
     return render(request, "dashboard/student_dashboard.html", context)
+
 
 
 
@@ -149,7 +158,7 @@ def teacher_dashboard(request):
         {"student": "Nathi Khoza", "status": "Present"},
         {"student": "Gift Mkansi", "status": "Present"},
         {"student": "Walker  Sibuyi", "status": "Present"},
-        # ... (more records as needed)
+       
     ]
     
     # Check for download requests
@@ -192,7 +201,7 @@ def teacher_dashboard(request):
             {"student": "Jane Roe", "remark": "Struggling with foundational concepts."},
             {"student": "Tom Ray", "remark": "Needs assistance in advanced topics."},
         ],
-        # KPI values for Student Performance Insights
+       
         "average_grade": 78,
         "pass_rate": 85,
         "grade_distribution": [40, 30, 20, 10],
@@ -236,3 +245,53 @@ def login_view(request):
         form = LoginForm()
 
     return render(request, "login/login.html", {"form": form})
+
+
+
+"""
+
+# add_student view 
+def add_student(request):
+    if request.method == "POST":
+        form = StudentRegisterForm(request.POST)
+        if form.is_valid():
+            student = form.save(commit=False)
+
+            student.username = student.Email  
+             #  Temporary password
+            student.password = make_password(student.LastName) 
+            student.save()
+
+            #  Assign student role
+            student_group, created = Group.objects.get_or_create(name="Students")
+            student.groups.add(student_group)
+
+            return redirect("success_page")   
+    else:
+        form = StudentRegisterForm()
+
+    return render(request, "Home/add_student.html", {"form": form})
+
+
+# add_lecturer view 
+def add_lecturer(request):
+    if request.method == "POST":
+        form = LecturerRegisterForm(request.POST)
+        if form.is_valid():
+            lecturer = form.save(commit=False)
+
+            lecturer.username = lecturer.Email   
+            lecturer.password = make_password(lecturer.LastName)  
+            lecturer.save()
+
+            #  Assign lecturer role
+            lecturer_group, created = Group.objects.get_or_create(name="Lecturers")
+            lecturer.groups.add(lecturer_group)
+
+            return redirect("success_page")   
+    else:
+        form = LecturerRegisterForm()
+
+    return render(request, "Home/add_lecturer.html", {"form": form})
+
+"""

@@ -53,9 +53,11 @@
         }
         #dashboard { display: block; }
 
-        .profile {
-            display: flex;
-            flex-direction: column;
+        .card img {
+            height: 150px;
+            object-fit: cover;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
         }
     </style>
 </head>
@@ -63,7 +65,7 @@
 {% load static %}
 <body>
 
-    <!-- Fixed Top Navbar -->
+    <!-- Top Navbar -->
     <nav class="navbar navbar-light navbar-custom">
         <div class="container-fluid d-flex justify-content-between">
             <div class="d-flex align-items-center">
@@ -77,7 +79,7 @@
         </div>
     </nav>
 
-    <!-- Fixed Sidebar -->
+    <!-- Sidebar -->
     <aside class="sidebar">
         <ul class="nav flex-column">
             <li class="nav-item"><a class="nav-link active" onclick="showSection('dashboard')">Dashboard</a></li>
@@ -92,17 +94,31 @@
     <!-- Main Content -->
     <div class="main-content">
         <section id="dashboard" class="dashboard-section">
-            <h4>Welcome to Your Student Dashboard</h4>
+            <div class="row">
+                {% for subject in subjects_registered %}
+                <div class="col-md-4 mb-4">
+                    <a href="/subject-details/{{ subject.code }}" class="text-decoration-none">
+                        <div class="card bg-primary text-white">
+                            <img src="{% static 'dashboard/styles/Edu-logo.png' %}" class="card-img-top" alt="{{ subject.name }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ subject.name }}</h5>
+                                <p class="card-text">Subject Code: {{ subject.code }}</p>
+                                <p class="card-text">Semester: {{ subject.semester }}</p>
+                                <p class="card-text">Course: {{ subject.course }}</p>
+                                <canvas id="{{ subject.code }}Chart"></canvas>
+                                <p>Performance: {{ subject.performance }}%</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
         </section>
 
         <!-- Performance Tracking -->
         <section id="performance" class="dashboard-section">
-            <h4>Select Subject to View Performance</h4>
-            <select id="subjectSelect" class="form-select">
-                {% for subject in subjects_registered %}
-                    <option value="{{ subject.name }}">{{ subject.name }}</option>
-                {% endfor %}
-            </select>
+            <h4> Performance</h4>
+  
             <p id="performanceSummary"></p>
             <canvas id="performanceChart"></canvas>
         </section>
@@ -144,7 +160,6 @@
 
         function capturePhoto() {
             alert("Capturing photo for attendance...");
-            // Placeholder function for future face recognition integration
         }
     </script>
 

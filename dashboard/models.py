@@ -1,7 +1,6 @@
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
-
-from django.db import models
-
+"""
 class Department(models.Model):
      D_Code = models.CharField(max_length=6, primary_key=True)
      DepartmentName = models.CharField(max_length=100)
@@ -14,9 +13,10 @@ class Lecturer(models.Model):
     FirstName = models.CharField(max_length=25)
     LastName = models.CharField(max_length=25)
     Email = models.EmailField(unique=True)
-
+    Department = models.ForeignKey(Department, on_delete=models.CASCADE,null=True)   
     def __str__(self):
         return f"{self.FirstName} {self.LastName}"
+
 
 class Subject(models.Model):
     SubjectCode = models.CharField(max_length=20, primary_key=True)
@@ -26,12 +26,21 @@ class Subject(models.Model):
     def __str__(self):
         return self.SubjectName
 
-class Student(models.Model):
-    StudentNumber = models.CharField(max_length=9, primary_key=True)
+
+ 
+
+class Student(AbstractUser): 
+    id = models.AutoField(primary_key=True) 
+    StudentNumber = models.CharField(max_length=9, unique=True)
     FirstName = models.CharField(max_length=25)
     LastName = models.CharField(max_length=25)
     Email = models.EmailField(unique=True)
-     
+
+    USERNAME_FIELD = "Email"  
+    REQUIRED_FIELDS = ["StudentNumber", "FirstName", "LastName"]
+
+    groups = models.ManyToManyField(Group, related_name="student_groups", blank=True)  # ✅ Assign Student Role
+    user_permissions = models.ManyToManyField(Permission, related_name="student_permissions", blank=True)
 
     def __str__(self):
         return f"{self.FirstName} {self.LastName}"
@@ -128,7 +137,5 @@ class UserLogs(models.Model):
 
     def __str__(self):
         return f"{self.AdminName} - {self.LogDescription}"
-
-
-
+"""
  

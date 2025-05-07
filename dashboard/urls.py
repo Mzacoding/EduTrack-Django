@@ -7,4 +7,6 @@ urlpatterns = [
     path('lecturer/', views.teacher_dashboard, name='lecturer_dashboard'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path("login/", views.login_view, name="login"),
+    #path("add-student/", views.add_student, name="add_student"),
+    #path("add-lecturer/", views.add_lecturer, name="add_lecturer"),
 ]
