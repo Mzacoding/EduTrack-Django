@@ -65,19 +65,20 @@
 {% load static %}
 <body>
 
-    <!-- Top Navbar -->
     <nav class="navbar navbar-light navbar-custom">
-        <div class="container-fluid d-flex justify-content-between">
-            <div class="d-flex align-items-center">
-                <img src="{% static user.profile_pic %}" width="40" height="40" class="rounded-circle" alt="Profile">
-                <div class="profile">
-                    <span class="ms-2 fw-bold">{{ user.student_number }}</span>
-                    <span class="ms-2 fw-bold">{{ user.Role }}</span>
-                </div>
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <img src="{% static user.profile_pic %}" class="rounded-circle" width="40" height="40" alt="Profile">
+            <div class="profile ms-2">
+                <span class="fw-bold">{{ user.student_number }}</span>
+                <span class="fw-bold">{{ user.Role }}</span>
             </div>
-            <button class="btn btn-outline-light">Logout</button>
         </div>
-    </nav>
+        <button class="btn btn-outline-light">Logout</button>
+    </div>
+</nav>
+
+
 
     <!-- Sidebar -->
     <aside class="sidebar">
